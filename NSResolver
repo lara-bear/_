@@ -1,0 +1,21 @@
+return function(s)
+	local str = s:gsub(",", "")
+	if tonumber(str) then
+		return tonumber(str)
+	end
+	str = str:split('')
+	return ({
+		M = function()
+			str[#str] = nil
+			return tonumber(table.concat(str))*1e6
+		end,
+		B = function()
+			str[#str] = nil
+			return tonumber(table.concat(str))*1e9
+		end,
+		T = function()
+			str[#str] = nil
+			return tonumber(table.concat(str))*1e12
+		end,
+	})[str[#str]]()
+end
