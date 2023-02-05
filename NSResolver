@@ -19,3 +19,4 @@ return function(s)
 		end,
 	})[str[#str]]()
 end
+--Converts Number Strings to its Integer Form. eg: (1.45M > 1 450 000)
