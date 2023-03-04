@@ -1,0 +1,235 @@
+--Project Lazarus Packet Cheat Module
+
+--Config
+Enabled = true
+CameraFieldOfView = 120
+ScreaM_Mode = 0.5 --Time (s) | Shoot delay for each zombie
+RagdollForce = 5
+GibPower = 1e69 --Power of mutilation
+Damage = 1e9
+TracerSettings = "Iscariot's Kiss" --Changes the type of tracer is sent. 3 Options: "Tracer", "Absolute Zero" and "Iscariot's Kiss". It's server sided so only you can't see it and Absolute Zero does freeze the zombies
+
+Spinbot = true
+SpinbotSpeed = 5
+
+local TracerThirdArgument = TracerSettings == "Iscariot's Kiss" and { 
+    ['Radius'] = 50, 
+    ['Damage'] = { 
+        ['Max'] = Damage, 
+        ['Min'] = Damage, 
+    }, 
+} or nil
+
+local TextTitle = Drawing.new("Text")
+TextTitle.Outline = true
+TextTitle.Center = true
+TextTitle.Color = Color3.new(1,1,1)
+TextTitle.Size = 20
+TextTitle.Text = [[Please shoot a zombie to proceed.
+
+This is necessary for getting the damage remote key.]]
+TextTitle.Position = Vector2.new(workspace.CurrentCamera.ViewportSize.X/2, 20)
+
+local key
+
+local mt, nc = getrawmetatable(game), "__namecall"
+setreadonly(mt, false)
+local onc = mt[nc]
+mt[nc] = function (self, ...)
+	local args = {...}
+	if getnamecallmethod() == "Kick" then
+		return
+	end
+	if self.Name == "Damage" then
+		key = args[2]
+		return onc(self,...)
+	end
+	return onc(self,...)
+end
+
+while not key do
+	task.wait()
+end
+
+TextTitle.Text = "Key obtained!"
+
+mt[nc] = onc
+
+onc,mt,nc = m,m,m
+
+TextTitle.Text = "nullified metatable variables!"
+TextTitle.Text = "Getting function library..."
+
+f = loadstring(game:HttpGet('https://pastebin.com/raw/LYKg9gJ8'))()
+
+TextTitle.Text = "Obtained function library!"
+
+connections = {}
+
+TextTitle.Text = "Modifying camera settings..."
+
+game.Players.LocalPlayer.CameraMode = Enum.CameraMode.Classic
+game.Players.LocalPlayer.CameraMaxZoomDistance = 7
+game.Players.LocalPlayer.CameraMinZoomDistance = 0
+workspace.CurrentCamera.CameraType = 5
+
+TextTitle.Text = "Modified camera settings!"
+
+local grr = workspace.Baddies
+
+TextTitle.Text = "Adding characters to ignore..."
+
+local charignore = {}
+
+for _, v in pairs (game.Players:GetPlayers()) do
+	charignore[#charignore+1] = v.Character
+	connections[#connections+1] = v.CharacterAdded:Connect(function(a)
+		charignore[#charignore+1] = a
+	end)
+end
+
+TextTitle.Text = "Creating raycast parameters..."
+
+local raycastparams = RaycastParams.new()
+raycastparams.FilterType = Enum.RaycastFilterType.Blacklist
+raycastparams.FilterDescendantsInstances = {workspace.Interact, workspace.Ignore, unpack(charignore)}
+
+connections[#connections+1] = game.Players.PlayerAdded:Connect(function(v)
+	connections[#connections+1] = v.CharacterAdded:Connect(function(a)
+		charignore[#charignore+1] = a
+		raycastparams.FilterDescendantsInstances = {workspace.Interact, workspace.Ignore, unpack(charignore)}
+	end)
+end)
+
+TextTitle.Text = "Creating firebullet function..."
+
+local firebullet = ScreaM_Mode and function(z, p, remote)
+	local Meds = z:FindFirstChild("Meds")
+	if Meds and tick()-Meds.Value < ScreaM_Mode then
+		return
+	end
+	Meds = Meds or Instance.new("NumberValue", z)
+	Meds.Value = tick()
+	Meds.Name = 'Meds'
+	remote:FireServer({BodyPart = z.HeadBox, Force = RagdollForce, GibPower = GibPower, Damage = Damage}, key)
+	game.Players.LocalPlayer.Character.ServerScript.WeaponFlash:FireServer()
+	game.Players.LocalPlayer.Character.ServerScript.WeaponSound:FireServer('Fire')
+	game.Players.LocalPlayer.Character.ServerScript.WeaponImpact:FireServer(TracerSettings,p,TracerThirdArgument)
+	local r = f.env.createray((game.Players.LocalPlayer.Character['Right Arm'].CFrame*CFrame.new(0,0,-game.Players.LocalPlayer.Character['Right Arm'].Size.Z/2)).p, p, 0.25, Color3.new(1,1,1))
+	r.Material = "Neon"
+	game['TweenService']:Create(r, TweenInfo.new(1), {Transparency = 1, Color = Color3.new(1,0,0)}):Play()
+	delay(1, function()
+		r:Destroy()
+	end)
+	local Fire = game.Players.LocalPlayer.Character.WeaponModel.Handle
+	Fire=Fire:FindFirstChild("Fire") or Fire.Muzzle:FindFirstChild("Fire") or Fire.Muzzle:FindFirstChild("Fire1")
+	Fire:Play()
+end or function(z, p, remote)
+	remote:FireServer({BodyPart = z.HeadBox, Force = RagdollForce, GibPower = GibPower, Damage = Damage}, key)
+	game.Players.LocalPlayer.Character.ServerScript.WeaponFlash:FireServer()
+	game.Players.LocalPlayer.Character.ServerScript.WeaponSound:FireServer('Fire')
+	game.Players.LocalPlayer.Character.ServerScript.WeaponImpact:FireServer(TracerSettings,p,TracerThirdArgument)
+	local r = f.env.createray((game.Players.LocalPlayer.Character['Right Arm'].CFrame*CFrame.new(0,0,-game.Players.LocalPlayer.Character['Right Arm'].Size.Z/2)).p, p, 0.25, Color3.new(1,1,1))
+	r.Material = "Neon"
+	game['TweenService']:Create(r, TweenInfo.new(1), {Transparency = 1, Color = Color3.new(1,0,0)}):Play()
+	delay(1, function()
+		r:Destroy()
+	end)
+	local Fire = game.Players.LocalPlayer.Character.WeaponModel.Handle.Muzzle
+	Fire=Fire:FindFirstChild("Fire") or Fire.Muzzle:FindFirstChild("Fire") or Fire.Muzzle:FindFirstChild("Fire1")
+	Fire:Play()
+end
+
+TextTitle.Text = "Adding RenderStep connection..."
+
+local SpinAngle = 0
+
+connections[#connections+1] = game["RunService"].RenderStepped:Connect(function()
+	if not Spinbot then
+		return
+	end
+	game.Players.LocalPlayer.Character.Humanoid.AutoRotate = false
+	local pp = game.Players.LocalPlayer.Character.HumanoidRootPart
+	pp.CFrame = CFrame.new(pp.Position)*CFrame.Angles(0,SpinAngle,0)
+	SpinAngle = SpinAngle >= 6.265732014659643 and 0 or SpinAngle + math.rad(SpinbotSpeed)
+end)
+
+connections[#connections+1] = game["RunService"].RenderStepped:Connect(function()
+	if not Enabled then
+		return
+	end
+	workspace.CurrentCamera.FieldOfView = CameraFieldOfView
+	local Origin, remote = game.Players.LocalPlayer.Character.Head.Position
+	for _, z in pairs (grr:GetChildren()) do
+		local p = z.HeadBox.Position
+		local unit = (p-Origin)
+		local result = workspace:Raycast(Origin, unit, raycastparams)
+		if not result or result.Instance.Parent ~= z then
+			continue
+		end
+		for _, x in pairs (z.Humanoid:GetChildren()) do
+			if x.Name ~= "Damage" or x.ClassName ~= "RemoteEvent" then
+				continue
+			end
+			remote = x
+		end
+		if not remote then
+			continue
+		end
+		firebullet(z,p,remote)
+	end
+end)
+
+TextTitle.Text = "Adding getgenv().Disable function..."
+
+getgenv().Disable = function()
+    for _, c in pairs (connections) do
+        c:Disconnect()
+    end
+
+    Enabled, CameraFieldOfView, ScreaM_Mode, raycastparams, connections, firebullet, charignore, key, grr, f = m,m,m,m,m,m,m,m,m,m
+
+    for i=5,1,-1 do
+        TextTitle.Text = "Disabled. Removing in "..tostring(i).." seconds."
+        task.wait(1)
+    end
+
+    TextTitle:Remove()
+
+    TextTitle = m
+
+    getgenv().Disable = m
+
+    return "Destroyed Script. Thanks for using PCM:Lazarus"
+end
+
+TextTitle.Text = [[Packet Cheat Module for Project Lazarus successfully loaded!
+
+If any issues persist, please call the 'getgenv().Disable' function and/or contact me on discord, larabear#2200
+
+Thanks for using PCM:Lazarus
+Version: BETA 1.05a
+
+I will be publishing more cheats or updates on my github page and...
+...there might be update videos on my alt yt account, @larabear_scripts
+
+This message will change in 25 seconds.]]
+
+delay(25, function()
+    TextTitle.Text = "Packet Cheat Module by larabear"
+end)
+
+while Enabled do
+    task.wait(0.5)
+	for _, z in pairs (grr:GetChildren()) do
+		local a = z:FindFirstChild("Highlight") or Instance.new("Highlight", z)
+		a.FillColor = Color3.new(1,0,0)
+		a.FillTransparency = 0.6
+		a.OutlineTransparency = 1
+	end
+end
+
+for _, z in pairs (workspace.Baddies:GetChildren()) do
+    local a = z:FindFirstChild("Highlight") or Instance.new("Highlight", z)
+    a:Destroy()
+end
