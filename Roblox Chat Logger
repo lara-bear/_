@@ -1,18 +1,23 @@
 --[[
 
-	Version: 2.0.5b
+    Version: 2.0.5b
 
-    This script DOES and WILL ATTEMPT to dictate whether or not a chat message was sent PUBLICLY or PRIVATELY.
-    Games that HIDE the ROBLOX CHAT WINDOW, WILL CAUSE the script to ASSUME that ALL MESSAGES were sent PUBLICLY.
+	    This script DOES and WILL ATTEMPT to dictate whether or not a chat message was sent PUBLICLY or PRIVATELY.
+	    Games that HIDE the ROBLOX CHAT WINDOW, WILL CAUSE the script to ASSUME that ALL MESSAGES were sent PUBLICLY.
 
 
-    i highly suggest you to use a loadstring instead of copy pasting my scripts
-    i will update them quite often, which basically means that either my old code was crap or i added new features
+	    i highly suggest you to use a loadstring instead of copy pasting my scripts
+	    i will update them quite often, which basically means that either my old code was crap or i added new features
 
-    to individuals who critique my code, if you have genuine advice, please inform me about them. (this includes possible script optimizations etc.)
-    apologies for if i ask a lot of questions or if i act stupid
+	    to individuals who critique my code, if you have genuine advice, please inform me about them. (this includes possible script optimizations etc.)
+	    apologies for if i ask a lot of questions or if i act stupid
 
-    have a nice day and thanks for looking around my shitty github page
+	    have a nice day and thanks for looking around my shitty github page
+
+
+    LOADSTRING SCRIPT (Only one line):
+
+	loadstring(game:HttpGet('https://raw.githubusercontent.com/lara-bear/_/main/Roblox%20Chat%20Logger'))()
 
 
 ]]
