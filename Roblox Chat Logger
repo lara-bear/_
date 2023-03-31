@@ -1,0 +1,292 @@
+--[[
+
+	Version: 2.0.5b
+
+    This script DOES and WILL ATTEMPT to dictate whether or not a chat message was sent PUBLICLY or PRIVATELY.
+    Games that HIDE the ROBLOX CHAT WINDOW, WILL CAUSE the script to ASSUME that ALL MESSAGES were sent PUBLICLY.
+
+
+    i highly suggest you to use a loadstring instead of copy pasting my scripts
+    i will update them quite often, which basically means that either my old code was crap or i added new features
+
+    to individuals who critique my code, if you have genuine advice, please inform me about them. (this includes possible script optimizations etc.)
+    apologies for if i ask a lot of questions or if i act stupid
+
+    have a nice day and thanks for looking around my shitty github page
+
+
+]]
+
+local AUTOSCROLL_FUNC
+
+coroutine.wrap(function()
+	AUTOSCROLL_FUNC = function(scrolling, txElement, xmpt)
+		coroutine.wrap(function()
+			local ElementClone = txElement:Clone()
+
+			local MouseIn = false
+
+			scrolling.MouseEnter:Connect(function()
+				MouseIn = true
+				spawn(function()
+					while MouseIn do
+						task.wait()
+					end
+					delay(2, function()
+						while not MouseIn do
+							task.wait()
+							local acaca = ElementClone.Size.Y.Offset*(#scrolling:GetChildren()-xmpt)
+							if acaca > scrolling.AbsoluteSize.Y then
+								game['TweenService']:Create(scrolling, TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {CanvasPosition = Vector2.new(0,acaca)}):Play()
+							end
+						end
+					end)
+				end)
+			end)
+			scrolling.MouseLeave:Connect(function(i)
+				MouseIn = false
+			end)
+		end)()
+	end
+end)()
+
+local File = game:GetObjects("rbxassetid://12564496273")[1]
+File.Parent = game.CoreGui
+File.A.A.CanvasSize = UDim2.new(0,0,0,0)
+File.A.A.AutomaticCanvasSize = "Y"
+
+AUTOSCROLL_FUNC(File.A.A, File.A.A.A, 1)
+
+game["UserInputService"].InputBegan:Connect(function(i)
+	if i.KeyCode ~= Enum.KeyCode.F3 then
+		return
+	end
+	File.Enabled = not File.Enabled
+end)
+
+local expc=game.CoreGui:FindFirstChild("ExperienceChat")
+
+Disable = function()
+	for i, v in pairs (game.CoreGui:GetChildren()) do
+		if v.Name ~= 'Chat_History [X%T<"]' then
+			continue
+		end
+		v:Destroy()
+	end
+	for _, p in pairs (game.Players:GetPlayers()) do
+		for _, v in pairs (getconnections(p.Chatted)) do
+			v:Disable()
+		end
+	end
+	if not expc then
+		return
+	end
+	for i, v in pairs (getconnections(game.CoreGui.ExperienceChat.appLayout.chatWindow.scrollingView.bottomLockedScrollView.scrollingFrame.ChildAdded)) do
+		v:Disable()
+	end
+end
+
+File.A.B.A.MouseButton1Click:Connect(Disable)
+
+draggui = function(var1)
+	var1.Draggable = false 
+	do 
+		local a = var1 
+		local dragInput 
+		local dragStart 
+		local startPos 
+		local function update(input) 
+			local delta = input.Position - dragStart 
+			game["TweenService"]:Create(a, TweenInfo.new(0.1), {Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)}):Play()
+		end 
+		a.B.InputBegan:Connect(function(input) 
+			if input.UserInputType ~= Enum.UserInputType.MouseButton1 then 
+				return
+			end
+			var1.Draggable = true 
+			dragStart = input.Position 
+			startPos = a.Position 
+
+			input.Changed:Connect(function() 
+				if input.UserInputState == Enum.UserInputState.End then 
+					var1.Draggable = false 
+				end 
+			end) 
+		end) 
+		a.B.InputChanged:Connect(function(input) 
+			if input.UserInputType == Enum.UserInputType.MouseMovement then 
+				dragInput = input 
+			end 
+		end) 
+		game["UserInputService"].InputChanged:Connect(function(input) 
+			if input == dragInput and var1.Draggable then 
+				update(input) 
+			end 
+		end) 
+	end 
+end 
+
+draggui(File.A)
+
+draggui = nil
+
+local HexCodes = {
+	--Normal
+	"FF0000",
+	"FFA200",
+	"FFFF00",
+	"A2FF00",
+	"00FF00",
+	"00FFA2",
+	"00A2FF",
+	"0000FF",
+	"A200FF",
+	"FF00A2",
+
+	--Pastel
+	"FFB8B8",
+	"FFA2B8",
+	"FFFFB8",
+	"A2FFB8",
+	"B8FFB8",
+	"B8FFA2",
+	"B8A2FF",
+	"B8B8FF",
+	"A2B8FF",
+	"FFB8A2",
+
+	--Dark
+	"750000",
+	"75A200",
+	"757500",
+	"A27500",
+	"007500",
+	"0075A2",
+	"00A275",
+	"000075",
+	"A20075",
+	"7500A2",
+}
+
+--Hour, Minute, NameColor, Name, Message
+
+local Label = File.A.A.A
+Label.AutomaticSize = "Y"
+Label.Parent = nil
+
+local Message = ([[<font color="#CECECE"><i>[%s:%s] [%s]</i></font> <font color="#%s"><b>[%s]:</b></font> <font color="#FFFFFF">%s</font>]])
+local JoinLeaveMessage = ([[<font color="#CECECE"><i>[%s:%s]</i></font> <font color="#%s"><b>%s</b></font> <font color="#FFFFFF">has %s the server.</font>]])
+local CustomMessage = ([[<i><font color="#CECECE">[%s:%s]</font> <font color="#%s"><b>%s</b></font> <font color="#7d7d7d">%s</font></i>]])
+
+function NewMsg(hr,min,nc,n,m,w,endorsement)
+	local a = Label:Clone()
+	a.Parent = File.A.A
+	a.Text = endorsement==2 and CustomMessage:format(hr,min,nc,n,m) or endorsement==1 and JoinLeaveMessage:format(hr,min,nc,n,m) or Message:format(hr,min,(w==1 and "Public" or w~=nil and "From "..w or "Private"),nc,n,m)
+end
+
+local PlayerColors = {}
+
+local UsedColors = {}
+
+local ChattedTick = {}
+
+if expc then
+
+	expc.appLayout.chatWindow.scrollingView.bottomLockedScrollView.scrollingFrame.ChildAdded:Connect(function(v)
+		local m = v.Text:split(': ')
+		if #m > 2 then
+			local n = m
+			table.remove(n, 1)
+			m = {1,table.concat(n)}
+			n=nil
+		end
+		m = m[2]
+		ChattedTick[m] = (v:FindFirstChild("TextMessageButton") and v.TextMessageButton.Text:find("From") and v.TextMessageButton.Text:split("From ")[2]:split(string.char(93))[1]) or 1
+		task.wait(0.25)
+		ChattedTick[m], m = nil,nil
+	end)
+
+end
+
+for i, p in pairs (game.Players:GetPlayers()) do
+	if p == game.Players.LocalPlayer then
+		continue
+	end
+	local ts, rnd = tostring, math.random
+	local c = HexCodes[#UsedColors+1] or "#"..ts(rnd(10,99))..ts(rnd(10,99))..ts(rnd(10,99))
+	while UsedColors[c] do
+		c = not UsedColors[ HexCodes[#UsedColors+1] ] and HexCodes[#UsedColors+1] or "#"..ts(rnd(10,99))..ts(rnd(10,99))..ts(rnd(10,99))
+		task.wait()
+	end
+	PlayerColors[p.UserId] = c
+	UsedColors[c] = true
+	c,ts,rnd=nil,nil,nil
+	local nam = p.Name
+	local connectino = p.Chatted:Connect(function(m)
+		local ts, date = tostring, os.date("*t")
+		local min = ts(date.min)
+		min = min:len() == 1 and "0"..min or min
+		for i=1,10,1 do
+			if ChattedTick[m] then
+				break
+			end
+			task.wait(0.1)
+		end
+		NewMsg(ts(date.hour), min, PlayerColors[p.UserId], nam, m, (not expc and 1) or ChattedTick[m])
+		ts,date,min = nil,nil,nil
+	end)
+end
+
+game.Players.PlayerAdded:Connect(function(p)
+	local ts, date = tostring, os.date("*t")
+	local min = ts(date.min)
+	min = min:len() == 1 and "0"..min or min
+	NewMsg(ts(date.hour),min,"7d7d7d",p.Name,"joined",nil,1)
+	ts,date,min = nil,nil,nil
+
+	local ts, rnd = tostring, math.random
+	local c = HexCodes[#UsedColors+1] or "#"..ts(rnd(10,99))..ts(rnd(10,99))..ts(rnd(10,99))
+	while UsedColors[c] do
+		c = not UsedColors[ HexCodes[#UsedColors+1] ] and HexCodes[#UsedColors+1] or "#"..ts(rnd(10,99))..ts(rnd(10,99))..ts(rnd(10,99))
+		task.wait()
+	end
+	PlayerColors[p.UserId] = c
+	UsedColors[c] = true
+	c,ts,rnd=nil,nil,nil
+	local nam = p.Name
+	local connectino = p.Chatted:Connect(function(m)
+		local ts, date = tostring, os.date("*t")
+		local min = ts(date.min)
+		min = min:len() == 1 and "0"..min or min
+		for i=1,10,1 do
+			if ChattedTick[m] then
+				break
+			end
+			task.wait(0.1)
+		end
+		NewMsg(ts(date.hour), min, PlayerColors[p.UserId], nam, m, (not expc and 1) or ChattedTick[m])
+		ts,date,min = nil,nil,nil
+	end)
+end)
+
+game.Players.PlayerRemoving:Connect(function(p)
+	UsedColors[ PlayerColors[p.UserId] ] = nil
+	local ts, date = tostring, os.date("*t")
+	local min = ts(date.min)
+	min = min:len() == 1 and "0"..min or min
+	NewMsg(ts(date.hour),min,"7d7d7d",p.Name,"left",nil,1)
+	ts,date,min = nil,nil,nil
+end)
+
+local ts, date = tostring, os.date("*t")
+local min = ts(date.min)
+min = min:len() == 1 and "0"..min or min
+NewMsg(ts(date.hour),min,"FFFFFF","Chats will be logged from now on.","F3 to hide UI",nil,2)
+NewMsg(ts(date.hour),min,"7D7D7D",'With new "AutoScroll" feature, hover your Mouse over the UI to disable temporarily.',[[
+
+
+      All workings are subject to improvement.
+
+          -by larabear
+]],nil,2)
+ts,date,min = nil,nil,nil
