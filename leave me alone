@@ -795,3 +795,5 @@ Library = {
 		return NewTab
 	end,
 }
+
+return Library, values
