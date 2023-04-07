@@ -1,0 +1,797 @@
+local values
+local SulfurUI
+local Utility
+local Clones
+
+local ChangingTabs
+local ActiveSectors
+
+local UserInputService
+Library = {
+	new = function()
+		values = {{{{Active=false}}}}
+		
+		ChangingTabs={}
+		
+		Library.Tween = function(...)
+			game["TweenService"]:Create(...):Play()
+		end
+		ActiveSectors = {}
+		local OldSulfurUI = game:GetObjects('rbxassetid://12257033309')[1]
+		OldSulfurUI.Enabled = true
+		SulfurUI = OldSulfurUI:Clone()
+		Utility = SulfurUI.Utility
+		Utility.Parent = nil
+		Clones = {
+			ColorPicker = Utility.ColorPicker:Clone(),
+			TabName = Utility.Tabs.Tab:Clone(),
+			Body = Utility.Tabs.Body:Clone(),
+			Sector = Utility.Sectors.Sector:Clone(),
+			Elements = {
+				Text = Utility.Elements.Text:Clone(),
+				Button = Utility.Elements.Button:Clone(),
+				Toggle = Utility.Elements.Toggle:Clone(),
+				Slider = Utility.Elements.Slider:Clone(),
+				Keybind = Utility.Elements.Keybind:Clone(),
+				TextBox = Utility.Elements.TextBox:Clone(),
+				Dropdown = Utility.Elements.Dropdown:Clone(),
+				Jumbobox = Utility.Elements.Dropdown:Clone(),
+				InverseJumbobox = Utility.Elements.Dropdown:Clone(),
+				ToggleColor = Utility.Elements.ToggleColor:Clone(),
+			},
+		}
+		OldSulfurUI:Destroy()
+		Utility:Destroy()
+		SulfurUI.Parent = game.CoreGui
+		Clones.ColorPicker.Parent = nil
+		
+		UserInputService=game['UserInputService']
+
+		local BindedFunctions = {}
+		for i, v in pairs (Enum.KeyCode:GetEnumItems()) do
+			BindedFunctions[v] = {}
+		end
+		local ToggleUI = function()
+			SulfurUI.Enabled = not SulfurUI.Enabled
+		end
+		BindedFunctions[Enum.KeyCode.Insert][1] = {f = ToggleUI, Type = "Toggle", Toggle = false, Active = false, n=1,na=1,nam=1}
+		BindedFunctions[Enum.KeyCode.RightControl][1] = BindedFunctions[Enum.KeyCode.Insert][1]
+		UserInputService.InputBegan:Connect(function(i)
+			if i.KeyCode == Enum.KeyCode.Unknown then
+				return
+			end
+			for x, z in pairs (BindedFunctions[i.KeyCode]) do
+				if z.Type == "None" then
+					continue
+				end
+				z.Active = (z.Type == "Hold" and true) or not z.Active
+				coroutine.wrap(function()
+					z.f(z)
+				end)()
+				values[z.n][z.na][z.nam].Active = z.Active
+			end
+		end)
+		UserInputService.InputEnded:Connect(function(i)
+			if i.KeyCode == Enum.KeyCode.Unknown then
+				return
+			end
+			for x, z in pairs (BindedFunctions[i.KeyCode]) do
+				z.Active = z.Type ~= "Hold" and z.Active or false
+				values[z.n][z.na][z.nam].Active = z.Active
+			end
+		end)
+
+		local unpacktbl = function(t)
+			local s = "{"
+			for i, v in pairs (t) do
+				if s:len() > 22 then
+					return s..'...}'
+				end
+				s = s..v..(i<#t and ', ' or '')
+				i+=1
+			end
+			return s..'}'
+		end
+		local unpackinversetable = function(t, n)
+			local s = "{"
+			for v, i in pairs (t) do
+				if s:len() > 22 then
+					return s..'...}'
+				end
+				s = s..v..(i<n and ', ' or '')
+				i+=1
+			end
+			return s..'}'
+		end
+		local genId = function(l)
+			local Id = ""
+			for i=1,l,1 do
+				Id = Id..string.char(math.random(65,120))
+			end
+			return Id
+		end
+		local enumnumbers={
+			[Enum.KeyCode.Zero]='0',
+			[Enum.KeyCode.One]='1',
+			[Enum.KeyCode.Two]='2',
+			[Enum.KeyCode.Three]='3',
+			[Enum.KeyCode.Four]='4',
+			[Enum.KeyCode.Five]='5',
+			[Enum.KeyCode.Six]='6',
+			[Enum.KeyCode.Seven]='7',
+			[Enum.KeyCode.Eight]='8',
+			[Enum.KeyCode.Nine]='9',
+		}
+
+		local defaultBody = SulfurUI.Frame.Body
+		SulfurUI.Frame.Tab.Sulfur.InputBegan:Connect(function(i)
+			if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+				return
+			end
+			if SulfurUI.Frame:FindFirstChild"Body" then
+				SulfurUI.Frame.Body.Parent = nil
+			end
+			for i, v in pairs (SulfurUI.Frame.Tab:GetChildren()) do
+				if not v:IsA("Frame") or v == SulfurUI.Frame.Tab.Sulfur then
+					continue
+				end
+				Library.Tween(v.Underline, TweenInfo.new(0.3), {Transparency = 0.8})
+			end
+			defaultBody.Parent = SulfurUI.Frame
+			for i, v in pairs (ChangingTabs) do
+				v()
+			end
+		end)
+		defaultBody.Sector.Text.Text.Text = "larabear eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+		defaultBody.Sector.Text.Text.Active = false
+		defaultBody.Sector.Text.Text.InputBegan:Connect(function(i)
+			if not defaultBody.Sector.Text.Text.Active then
+				Library.Tween(defaultBody.Sector, TweenInfo.new(.3), {BackgroundColor3 = Color3.fromRGB(17, 15, 20)})
+				Library.Tween(defaultBody.Sector.Text.Frame, TweenInfo.new(.2), {BackgroundColor3 = Color3.fromRGB(17, 15, 20)})
+				defaultBody.Sector.Text.Text.Active = true
+			end
+		end)
+		defaultBody.Sector.Text.Text.InputEnded:Connect(function(i)
+			Library.Tween(defaultBody.Sector, TweenInfo.new(.3), {BackgroundColor3 = Color3.fromRGB(33, 30, 39)})
+			Library.Tween(defaultBody.Sector.Text.Frame, TweenInfo.new(.2), {BackgroundColor3 = Color3.fromRGB(33, 30, 39)})
+			defaultBody.Sector.Text.Text.Active = false
+		end)
+		local stopDrag = false
+		local function activateDrag(v)
+			v.Draggable = false 
+			local dI
+			local dS
+			local startPos 
+			local function update(input) 
+				local d = input.Position - dS
+				Library.Tween(v, TweenInfo.new(0.1), {Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + d.X, startPos.Y.Scale, startPos.Y.Offset + d.Y)})
+			end 
+			v.InputBegan:Connect(function(input) 
+				if input.UserInputType ~= Enum.UserInputType.MouseButton1 or stopDrag then 
+					return
+				end
+				v.Draggable = true 
+				dS = input.Position 
+				startPos = v.Position 
+
+				input.Changed:Connect(function() 
+					if input.UserInputState == Enum.UserInputState.End then 
+						v.Draggable = false 
+					end 
+				end) 
+			end) 
+			v.InputChanged:Connect(function(input) 
+				if input.UserInputType == Enum.UserInputType.MouseMovement then 
+					dI = input 
+				end 
+			end) 
+			game["UserInputService"].InputChanged:Connect(function(input) 
+				if input == dI and v.Draggable and not stopDrag then 
+					update(input) 
+				end 
+			end) 
+		end
+		activateDrag(SulfurUI.Frame)
+		local UpdateTabs = function()
+			local NumberOfTabs = 0
+			for i, v in pairs (SulfurUI.Frame.Tab:GetChildren()) do
+				NumberOfTabs+= v.ClassName ~= "Frame" and 0 or 1
+			end
+			NumberOfTabs = math.clamp(NumberOfTabs, 1, 50)
+			SulfurUI.Frame.Tab.UIPadding.PaddingRight = UDim.new(0,500-(500/NumberOfTabs)+2)
+			return NumberOfTabs
+		end
+		local NewTab = function(n)
+			values[n] = {}
+			local TabName = Clones.TabName:Clone()
+			TabName.Parent = SulfurUI.Frame.Tab
+			TabName.Text.Text = n
+			TabName.Name = n
+			UpdateTabs()
+			local Body = Clones.Body:Clone()
+			TabName.InputBegan:Connect(function(i)
+				if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+					return
+				end
+				if SulfurUI.Frame:FindFirstChild("Body") then
+					SulfurUI.Frame.Body.Parent = nil
+				end
+				Body.Parent = SulfurUI.Frame
+				for i, v in pairs (SulfurUI.Frame.Tab:GetChildren()) do
+					if not v:IsA("Frame") or v == TabName then
+						continue
+					end
+					Library.Tween(v.Underline, TweenInfo.new(.6), {Transparency = 0.6})
+				end
+				Library.Tween(TabName.Underline, TweenInfo.new(.4), {Transparency = 0})
+				for i, f in pairs (ChangingTabs) do
+					f()
+				end
+			end)
+			local Sectors = {}
+			local Sector = function(region, na)
+				values[n][na] = {}
+
+				local _Sector = Clones.Sector:Clone()
+
+				_Sector.InputBegan:Connect(function(i)
+					if i.UserInputType ~= Enum.UserInputType.MouseMovement then
+						return
+					end
+					Library.Tween(_Sector, TweenInfo.new(.3), {BackgroundColor3 = Color3.fromRGB(49, 42, 58)})
+					stopDrag = true
+				end)
+				_Sector.InputEnded:Connect(function(i)
+					if i.UserInputType ~= Enum.UserInputType.MouseMovement then
+						return
+					end
+					Library.Tween(_Sector, TweenInfo.new(.3), {BackgroundColor3 = Color3.fromRGB(33, 30, 39)})
+					stopDrag = false
+				end)
+
+				_Sector.Text.Text = na
+				_Sector.Parent = Body[region]
+
+				local Sector=_Sector.Sector
+
+				return function(t, nam, d, c)
+					local ElementId = genId(10)
+
+					local Clone = Clones.Elements[t]:Clone()
+					Clone.Parent = Sector
+					Clone.LayoutOrder = #Sector:GetChildren()+1
+					Clone.Text.Text = nam
+
+					local doings = {
+						Text = function()end,
+						Button = function()
+							Clone.Text.MouseButton1Click:Connect(function()
+								Library.Tween(Clone.Frame, TweenInfo.new(.1), {BackgroundColor3 = Color3.fromRGB(17, 15, 20)})
+								delay(.1, function()
+									Library.Tween(Clone.Frame, TweenInfo.new(.3), {BackgroundColor3 = Color3.fromRGB(33, 30, 39)})
+								end)
+								return c and c()
+							end)
+						end,
+						TextBox = function()
+							values[n][na][nam] = ''
+							Clone.Text.Text = ''
+							Clone.Text.PlaceholderText = nam
+							Clone.Text.FocusLost:Connect(function()
+								values[n][na][nam] = Clone.Text.Text
+								print(values)
+								return c and c(values[n][na][nam])
+							end)
+						end,
+						Toggle = function()
+							values[n][na][nam] = false
+							Clone.Text.InputEnded:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+									return
+								end
+								Library.Tween(Clone.Toggle, TweenInfo.new(.1), {BackgroundColor3 = Clone.Toggle.Active and Color3.fromRGB(34, 30, 40) or Color3.fromRGB(172, 152, 203)})
+								Clone.Toggle.Active = not Clone.Toggle.Active
+								values[n][na][nam] = Clone.Toggle.Active
+								return c and c(values[n][na][nam])
+							end)
+						end,
+						Dropdown = function()
+							local Self = d[1]
+							values[n][na][nam] = Self
+							local Drop = Clone.Main.Frame.Dropdown
+							local Option = Drop.Body.Option
+							Option.Parent = nil
+							Drop.Parent = nil
+							for i, v in pairs (d) do
+								local a = Option:Clone()
+								a.Parent = Drop.Body
+								a.Text = v
+								a.InputEnded:Connect(function(i)
+									if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+										return
+									end
+									Self = v
+									values[n][na][nam] = Self
+									Clone.Main.Text.Text = v
+									return c and c(values[n][na][nam])
+								end)
+							end
+							Option:Destroy()
+							Clone.Main.Text.InputEnded:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+									return
+								end
+								Drop.Parent = Drop.Active and Clone.Main.Frame or nil
+								Library.Tween(Clone.Main.Frame.i, TweenInfo.new(.5), {ImageTransparency = Drop.Active and 1 or 0})
+								Drop.Active = not Drop.Active
+							end)
+							Clone.Main.Text.Text = Self
+						end,
+						Slider = function()
+							values[n][na][nam] = d.default
+							
+							local designation = #ChangingTabs+1
+							
+							ChangingTabs[designation] = function()end
+
+							local setSlider = d.min >= 0 and function()
+
+								local Value = values[n][na][nam]
+								Clone.Value.Text = Value~=math.floor(Value) and '['..tostring(Value)..']' or '['..tostring(Value)..'.00]'
+
+								local mult = Value/d.max
+								local demscale = 210*mult
+
+								Clone.Text.Frame.Slider.Size = UDim2.new(0,demscale,0,6)
+
+							end or function()
+
+								local Value = values[n][na][nam]
+								Clone.Value.Text = Value~=math.floor(Value) and '['..tostring(Value)..']' or '['..tostring(Value)..'.00]'
+
+								Value = Value - d.min
+
+								local mult = Value / (d.max-d.min)
+								local demscale = 210*mult
+
+								Clone.Text.Frame.Slider.Size = UDim2.new(0,demscale,0,6)
+
+							end
+
+							setSlider()
+
+							local enabled=false
+							Clone.Text.Frame.InputBegan:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+									return
+								end
+								enabled=true
+							end)
+							local lastinput = nil
+							Clone.Text.Frame.InputChanged:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseMovement or not enabled then
+									return
+								end
+								lastinput = i
+								local a = Clone.Text.Frame.Slider.Size
+
+								local InPos = i.Position.X-14
+
+								Clone.Text.Frame.Slider.Size = UDim2.new(0,math.clamp(InPos-Clone.Text.Frame.Slider.AbsolutePosition.X,0,210),0,6)
+								local Value = math.clamp(math.floor(((((d.max - d.min) / 175) * Clone.Text.Frame.Slider.AbsoluteSize.X) + d.min)*100)/100, d.min, d.max)
+								Clone.Text.Frame.Slider.Size = a
+								values[n][na][nam] = Value
+								setSlider()
+								return c and c(values[n][na][nam])
+							end)
+							Clone.Text.Frame.InputEnded:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseButton1 or not enabled then
+									if i.UserInputType ~= Enum.UserInputType.MouseButton2 then
+										return
+									end
+									Clone.Value.TextTransparency = 0.5
+									Clone.Value.Text = "[...]"
+									local MYNAMEISSKYLERWHITEYO
+									local String = ""
+									local LastValue = values[n][na][nam]
+									local CurrentValue = 0
+									MYNAMEISSKYLERWHITEYO = UserInputService.InputBegan:Connect(function(i)
+										local tnb = enumnumbers[i.KeyCode]
+										if not tnb then
+											if i.KeyCode == Enum.KeyCode.Period then
+												for i, v in pairs (String:split('')) do
+													if v~="." then
+														continue
+													end
+													return
+												end
+												String=String..'.'
+												Clone.Value.Text = '['..String..']'
+												CurrentValue=tonumber(String)
+												return
+											end
+											if i.KeyCode == Enum.KeyCode.Minus then
+												local Split = String:split('')
+												if Split[1] == "-" then
+													return
+												end
+												String='-'..String
+												CurrentValue=tonumber(String)
+												Clone.Value.Text = '['..String..']'
+												return
+											end
+											if i.KeyCode == Enum.KeyCode.Backspace then
+												local Split = String:split('')
+												Split[#Split]=nil
+												String=table.concat(Split)
+												CurrentValue=tonumber(String)
+												Clone.Value.Text = '['..String..']'
+												return
+											end
+											if i.KeyCode ~= Enum.KeyCode.Return then
+												return
+											end
+
+											local Boolean = (CurrentValue - LastValue)~=0
+											values[n][na][nam] = math.clamp(Boolean and CurrentValue or values[n][na][nam], d.min, d.max)
+
+											setSlider()
+											
+											Clone.Value.TextTransparency = 0
+
+											MYNAMEISSKYLERWHITEYO:Disconnect()
+											String = nil
+											LastValue = nil
+											CurrentValue = nil
+											return c and c(values[n][na][nam])
+										end
+										String=String..tnb
+										CurrentValue=tonumber(String)
+										Clone.Value.Text = '['..String..']'
+									end)
+									ChangingTabs[designation] = function()
+										local Boolean = (CurrentValue - LastValue)~=0
+										values[n][na][nam] = math.clamp(Boolean and CurrentValue or values[n][na][nam], d.min, d.max)
+
+										setSlider()
+
+										Clone.Value.TextTransparency = 0
+
+										MYNAMEISSKYLERWHITEYO:Disconnect()
+										String = nil
+										LastValue = nil
+										CurrentValue = nil
+										ChangingTabs[designation] = function()end
+										return c and c(values[n][na][nam])
+									end
+									return
+								end
+								enabled=false
+								if not lastinput then
+									return
+								end
+								local a = Clone.Text.Frame.Slider.Size
+
+								local InPos = i.Position.X-14
+
+								Clone.Text.Frame.Slider.Size = UDim2.new(0,math.clamp(InPos-Clone.Text.Frame.Slider.AbsolutePosition.X,0,210),0,6)
+								local Value = math.clamp(math.floor(((((d.max - d.min) / 175) * Clone.Text.Frame.Slider.AbsoluteSize.X) + d.min)*100)/100, d.min, d.max)
+								Clone.Text.Frame.Slider.Size = a
+								values[n][na][nam] = Value
+								setSlider()
+								return c and c(values[n][na][nam])
+							end)
+						end,
+						Jumbobox = function()
+							Clone.Name = "Jumbobox"
+							local Self = {}
+							values[n][na][nam] = {}
+							local Drop = Clone.Main.Frame.Dropdown
+							local Option = Drop.Body.Option
+							Option.Parent = nil
+							Drop.Parent = nil
+							for i, v in pairs (d) do
+								local a = Option:Clone()
+								a.Parent = Drop.Body
+								a.Text = v
+								a.TextTransparency = 0.3
+								a.InputEnded:Connect(function(i)
+									if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+										return
+									end
+									for z, x in pairs (Self) do
+										if x~=v then
+											continue
+										end
+										table.remove(Self, z)
+										table.sort(Self, function(a,b) return a<b end)
+										Clone.Main.Text.Text = unpacktbl(Self)
+										values[n][na][nam] = Self
+										Library.Tween(a, TweenInfo.new(0.3), {TextTransparency = 0.3})
+										return c and c(values[n][na][nam])
+									end
+									Self[#Self+1] = v
+									table.sort(Self, function(a,b) return a<b end)
+									values[n][na][nam] = Self
+									Clone.Main.Text.Text = unpacktbl(Self)
+									Library.Tween(a, TweenInfo.new(0.3), {TextTransparency = 0})
+									return c and c(values[n][na][nam])
+								end)
+							end
+							Option:Destroy()
+							Clone.Main.Text.InputEnded:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+									return
+								end
+								Drop.Parent = Drop.Active and Clone.Main.Frame or nil
+								Library.Tween(Clone.Main.Frame.i, TweenInfo.new(.5), {ImageTransparency = Drop.Active and 1 or 0})
+								Drop.Active = not Drop.Active
+							end)
+							Clone.Main.Text.Text = "Empty"
+						end,
+						InverseJumbobox = function()
+							Clone.Name = "Jumbobox"
+							local Self = {}
+							local InversedSelf = {}
+							values[n][na][nam] = {}
+							local Drop = Clone.Main.Frame.Dropdown
+							local Option = Drop.Body.Option
+							Option.Parent = nil
+							Drop.Parent = nil
+							for i, v in pairs (d) do
+								local a = Option:Clone()
+								a.Parent = Drop.Body
+								a.Text = v
+								a.TextTransparency = 0.3
+								a.InputEnded:Connect(function(i)
+									if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+										return
+									end
+									for z, x in pairs (Self) do
+										if x~=v then
+											continue
+										end
+										table.remove(Self, z)
+										table.sort(Self, function(a,b) return a<b end)
+										Clone.Main.Text.Text = unpacktbl(Self)
+
+										InversedSelf={}
+										for m,n in pairs (Self) do
+											InversedSelf[n]=m
+										end
+
+										values[n][na][nam] = InversedSelf
+										Library.Tween(a, TweenInfo.new(0.3), {TextTransparency = 0.3})
+										return c and c(values[n][na][nam])
+									end
+									Self[#Self+1] = v
+									table.sort(Self, function(a,b) return a<b end)
+									Clone.Main.Text.Text = unpacktbl(Self)
+
+									InversedSelf={}
+									for m,n in pairs (Self) do
+										InversedSelf[n]=m
+									end
+
+									values[n][na][nam] = InversedSelf
+									Library.Tween(a, TweenInfo.new(0.3), {TextTransparency = 0})
+									return c and c(values[n][na][nam])
+								end)
+							end
+							Option:Destroy()
+							Clone.Main.Text.InputEnded:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+									return
+								end
+								Drop.Parent = Drop.Active and Clone.Main.Frame or nil
+								Library.Tween(Clone.Main.Frame.i, TweenInfo.new(.5), {ImageTransparency = Drop.Active and 1 or 0})
+								Drop.Active = not Drop.Active
+							end)
+							Clone.Main.Text.Text = "Empty"
+						end,
+						Keybind = function()
+							local Self = nil
+							values[n][na][nam] = {Toggle = false, Active = false}
+							Clone.Text.Hitbox.InputEnded:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+									return
+								end
+								Library.Tween(Clone.Toggle, TweenInfo.new(.1), {BackgroundColor3 = Clone.Toggle.Active and Color3.fromRGB(34, 30, 40) or Color3.fromRGB(172, 152, 203)})
+								if Self then
+									Self.Toggle = not Self.Toggle
+								end
+								Clone.Toggle.Active = not Clone.Toggle.Active
+								values[n][na][nam].Toggle = Clone.Toggle.Active
+								return c and c(values[n][na][nam])
+							end)
+							Clone.Text.Type.Text.InputEnded:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+									return
+								end
+								local e = {
+									None = "Hold",
+									Hold = "Toggle",
+									Toggle = "None",
+								}
+								Clone.Text.Type.Text.Text = e[Clone.Text.Type.Text.Text]
+								e = nil
+								if Self then
+									Self.Type = Clone.Text.Type.Text.Text
+									Self.Active = false
+								end
+								return c and c(values[n][na][nam])
+							end)
+							Clone.Text.Type.Text.Frame.Keybind.Text.InputEnded:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+									return
+								end
+								local e
+								e = UserInputService.InputBegan:Connect(function(i)
+									if Clone.Text.Type.Text.Frame.Keybind.Text.Text ~= '...' then
+										return
+									end
+									local blacklisted = {
+										[Enum.KeyCode.Unknown]=1,
+										[Enum.KeyCode.Insert]=1,
+										[Enum.KeyCode.RightControl]=1,
+									}
+									if blacklisted[i.KeyCode] then
+										blacklisted=nil
+										Clone.Text.Type.Text.Frame.Keybind.Text.Text = 'None'
+										e:Disconnect()
+										return
+									end
+									local ts = tostring(i.KeyCode)
+									ts = ts:gsub('Enum.KeyCode.', '')
+									Clone.Text.Type.Text.Frame.Keybind.Text.Text = ts
+									ts=nil
+									blacklisted=nil
+									e:Disconnect()
+									wait()
+									BindedFunctions[i.KeyCode][ElementId] = {f = c, Type = Clone.Text.Type.Text.Text, Toggle = Clone.Toggle.Active, Active = false, n=n,na=na,nam=nam}
+									Self = BindedFunctions[i.KeyCode][ElementId]
+									Self.Active = false
+									return c and c(values[n][na][nam])
+								end)
+								Clone.Text.Type.Text.Frame.Keybind.Text.Text = '...'
+								return
+							end)
+						end,
+						ToggleColor = function()
+							values[n][na][nam] = {Toggle = false, Color = d.Color, Transparency = 0}
+
+							local designation = #ChangingTabs+1
+							
+							local Color = Clones.ColorPicker:Clone()
+							
+							ChangingTabs[designation] = function()
+								Color.Parent = nil
+							end
+							
+							local sdt = false
+							Clone.Hitbox.InputEnded:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+									return
+								end
+								Library.Tween(Clone.Toggle, TweenInfo.new(.1), {BackgroundColor3 = Clone.Toggle.Active and Color3.fromRGB(34, 30, 40) or Color3.fromRGB(172, 152, 203)})
+								Clone.Toggle.Active = not Clone.Toggle.Active
+								values[n][na][nam].Toggle = Clone.Toggle.Active
+								return c and c(values[n][na][nam])
+							end)
+							Clone.Color.InputEnded:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+									return
+								end
+								Color.Position = UDim2.new(0, Clone.Color.AbsolutePosition.X + Clone.Color.AbsoluteSize.X + 10, 0, Clone.Color.AbsolutePosition.Y)
+								Color.Parent = not Color.Parent and SulfurUI or nil
+								if not Color.Parent then
+									return
+								end
+							end)
+							Color.InputBegan:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+									return
+								end
+								sdt = true
+								stopDrag = sdt
+							end)Color.InputEnded:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+									return
+								end
+								sdt = false
+								stopDrag = sdt
+							end)
+							local H,S,V = d.Color:ToHSV()
+							Color.Hue.Cursor.Position = UDim2.new(0, -1, 0, math.clamp(H*143, 0, 143)-1)
+							Color.T.BackgroundColor3 = d.Color
+							Color.Color.BackgroundColor3 = d.Color
+							Clone.Color.BackgroundColor3 = d.Color
+							values[n][na][nam].Set = function()
+								H,S,V = d.Color:ToHSV()
+								Color.Hue.Cursor.Position = UDim2.new(0, -1, 0, math.clamp(H*143, 0, 143)-1)
+								Color.T.BackgroundColor3 = d.Color
+								Color.Color.BackgroundColor3 = d.Color
+								Clone.Color.BackgroundColor3 = d.Color
+							end
+							local slidinghue = false
+							local slidingcolor = false
+							local slidingt = false
+							Color.T.InputBegan:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+									return
+								end
+								slidingt = true
+							end)
+							Color.T.InputEnded:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+									return
+								end
+								slidingt = false
+							end)
+							Color.Color.InputBegan:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+									return
+								end
+								slidingcolor = true
+							end)
+							Color.Color.InputEnded:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+									return
+								end
+								slidingcolor = false
+							end)
+							Color.Hue.InputBegan:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+									return
+								end
+								slidinghue = true
+							end)
+							Color.Hue.InputEnded:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseButton1 then
+									return
+								end
+								slidinghue = false
+							end)
+							Color.InputChanged:Connect(function(i)
+								if i.UserInputType ~= Enum.UserInputType.MouseMovement or not sdt then
+									return
+								end
+								if slidingt then
+									local v = math.clamp(i.Position.X - Color.T.AbsolutePosition.X, 0, 170)
+									Color.T.Cursor.Position = UDim2.new(0, v-1, 0, -1)
+									values[n][na][nam].Transparency=v/170
+									return c and c(values[n][na][nam])
+								end
+								if slidinghue then
+									local v = math.clamp(i.Position.Y - Color.Hue.AbsolutePosition.Y, 0, 143)
+									Color.Hue.Cursor.Position = UDim2.new(0, -1, 0, v-1)
+									H=v/143
+									Color.Color.BackgroundColor3 = Color3.fromHSV(H,1,1)
+									Color.T.BackgroundColor3 = Color3.fromHSV(H,S,V)
+									values[n][na][nam].Color = Color.T.BackgroundColor3
+									Clone.Color.BackgroundColor3 = Color.T.BackgroundColor3
+									return c and c(values[n][na][nam])
+								end
+								local ColorX = (math.clamp(i.Position.X - Color.Color.AbsolutePosition.X, 0, Color.Color.AbsoluteSize.X)/Color.Color.AbsoluteSize.X)
+								local ColorY = (math.clamp(i.Position.Y - Color.Color.AbsolutePosition.Y, 0, Color.Color.AbsoluteSize.Y)/Color.Color.AbsoluteSize.Y)
+								Color.Color.Cursor.Position = UDim2.new(ColorX,  -1, ColorY,  -1)
+								S = 1-ColorX
+								V = 1-ColorY
+								Color.T.BackgroundColor3 = Color3.fromHSV(H,S,V)
+								values[n][na][nam].Color = Color.T.BackgroundColor3
+								Clone.Color.BackgroundColor3 = Color.T.BackgroundColor3
+								return c and c(values[n][na][nam])
+							end)
+						end,
+					}
+
+					doings[t]()
+
+					doings = nil
+				end
+			end
+			return Sector
+		end
+		return NewTab
+	end,
+}
