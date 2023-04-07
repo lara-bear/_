@@ -7,8 +7,8 @@ local ActiveSectors
 
 local UserInputService
 Library = {
-	new = function(values)
-		values = {{{{Active=false}}}}
+	new = function()
+		local values = {{{{Active=false}}}}
 		
 		ChangingTabs={}
 		
@@ -791,7 +791,7 @@ Library = {
 			end
 			return Sector
 		end
-		return NewTab
+		return NewTab, values
 	end,
 }
 
