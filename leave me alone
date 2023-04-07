@@ -1,4 +1,3 @@
-local values
 local SulfurUI
 local Utility
 local Clones
@@ -8,7 +7,7 @@ local ActiveSectors
 
 local UserInputService
 Library = {
-	new = function()
+	new = function(values)
 		values = {{{{Active=false}}}}
 		
 		ChangingTabs={}
@@ -796,4 +795,4 @@ Library = {
 	end,
 }
 
-return Library, values
+return Library
