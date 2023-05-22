@@ -1,0 +1,166 @@
+t = {
+	Color = Color3.fromRGB(0, 255, 255),
+	Transparency = 0,
+    PlaneDistance = 0.25,
+    ins = function()
+        local Part = Instance.new("Part", workspace.CurrentCamera)
+        Part.Anchored = true
+        Part.CanCollide = false
+        Part.CanQuery = false
+        Part.Material = 'Neon'
+        Part.Transparency = t.Transparency
+        Part.Color = t.Color
+        return Part
+    end,
+    fake2d = function(Part, TargetPart)
+ 
+        local Camera = workspace.CurrentCamera
+ 
+        local PartPosition = TargetPart.Position
+ 
+        local CamCFrame = workspace.CurrentCamera.CFrame
+ 
+        local Vector = PartPosition - CamCFrame.Position
+        local Magnitude = Vector.Magnitude
+ 
+        local Unit = Vector/Magnitude
+        local NewPosition = CamCFrame.Position + Unit * t.PlaneDistance
+ 
+        Part.CFrame = TargetPart.CFrame 
+ 
+        Part.Position = NewPosition
+ 
+        Part.Size = TargetPart.Size / (PartPosition - NewPosition).Magnitude * 0.25
+ 
+    end,
+    SourceCode = function()
+ 
+        local Players = game.Players
+ 
+        local LocalPlayer = Players.LocalPlayer
+ 
+        local PlayerObj = {}
+ 
+        local function applyCharacter(plr)
+ 
+            for _, v in pairs (plr.Character:GetChildren()) do
+ 
+                local obj = PlayerObj[plr.UserId][v.Name]
+ 
+                if not obj then
+                    continue
+                end
+ 
+                t.fake2d(obj, v)
+ 
+                obj.Parent = workspace.CurrentCamera
+ 
+            end
+ 
+        end
+ 
+        local function hideCharacter(PlrObj)
+ 
+            for _, obj in pairs (PlrObj) do
+ 
+                obj.Parent = nil
+ 
+            end
+ 
+        end
+ 
+        local function destroyCharacter(PlrObj)
+ 
+            for _, obj in pairs (PlrObj) do
+ 
+                obj:Destroy()
+ 
+            end
+ 
+        end
+ 
+        local function addPlayer(plr)
+ 
+            local UID = plr.UserId
+ 
+            PlayerObj[UID] = {
+                Head = t.ins(),
+                UpperTorso = t.ins(),
+                LowerTorso = t.ins(),
+ 
+                RightUpperArm = t.ins(),
+                RightLowerArm = t.ins(),
+                RightHand = t.ins(),
+                LeftUpperArm = t.ins(),
+                LeftLowerArm = t.ins(),
+                LeftHand = t.ins(),
+ 
+                RightUpperArm = t.ins(),
+                RightLowerArm = t.ins(),
+                RightHand = t.ins(),
+                LeftUpperArm = t.ins(),
+                LeftLowerArm = t.ins(),
+                LeftHand = t.ins(),
+ 
+                RightUpperLeg = t.ins(),
+                RightLowerLeg = t.ins(),
+                RightFoot = t.ins(),
+                LeftUpperLeg = t.ins(),
+                LeftLowerLeg = t.ins(),
+                LeftFoot = t.ins(),
+ 
+                RightUpperLeg = t.ins(),
+                RightLowerLeg = t.ins(),
+                RightFoot = t.ins(),
+                LeftUpperLeg = t.ins(),
+                LeftLowerLeg = t.ins(),
+                LeftFoot = t.ins(),
+            }
+ 
+            local RenderConnection
+ 
+            RenderConnection = game:GetService("RunService").RenderStepped:Connect(function()
+ 
+                if plr.Team == LocalPlayer.Team or not plr.Character then
+ 
+                    hideCharacter(PlayerObj[UID])
+ 
+                    return
+ 
+                end
+ 
+                applyCharacter(plr)
+ 
+            end)
+ 
+        end
+ 
+        return {
+            AutoAdd = coroutine.wrap(function()
+ 
+        		local Players = game.Players
+ 
+        		local LocalPlayer = Players.LocalPlayer
+ 
+                Players.PlayerAdded:Connect(function(plr)
+ 
+                    addPlayer(plr)
+ 
+                end)
+ 
+                for _, plr in pairs (Players:GetPlayers()) do
+ 
+                    addPlayer(plr)
+ 
+                end
+            end),
+            addPlayer = addPlayer,
+            hideCharacter = hideCharacter,
+            applyCharacter = applyCharacter,
+            destroyCharacter = destroyCharacter,
+        }
+ 
+    end,
+}
+ 
+return t
