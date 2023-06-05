@@ -19,11 +19,14 @@ return function(ToggleUIKey)
     local function newButton(XIndex, YIndex, text, callback)
         local XAdd = 5 + XIndex * 205
         local YAdd = 5 + YIndex * 30
+        local Old = {X=Frame.Size.X.Offset, Y=Frame.Size.Y.Offset}
         if XAdd > Max.X then
-            Frame.Size = UDim2.new(0, XAdd + 205, 0, YAdd + 30)
+            Max.X = XAdd
+            Frame.Size = UDim2.new(0, XAdd + 205, 0, Old.Y)
         end
         if YAdd > Max.Y then
-            
+            Max.Y = YAdd
+            Frame.Size = UDim2.new(0, Old.X, 0, YAdd + 30)
         end
         local Button = Instance.new("TextButton", Frame)
         Button.Text = text
