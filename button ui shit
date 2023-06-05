@@ -9,6 +9,7 @@ return function(ToggleUIKey)
         end
         Gui.Enabled = not Gui.Enabled
     end)
+    local Max = {X=0,Y=0}
     local Frame = Instance.new("Frame", Gui)
     Frame.Size = UDim2.new(0, 620, 0, 125)
     Frame.BackgroundColor3 = Color3.new(0,0,0)
@@ -18,6 +19,12 @@ return function(ToggleUIKey)
     local function newButton(XIndex, YIndex, text, callback)
         local XAdd = 5 + XIndex * 205
         local YAdd = 5 + YIndex * 30
+        if XAdd > Max.X then
+            Frame.Size = UDim2.new(0, XAdd + 205, 0, YAdd + 30)
+        end
+        if YAdd > Max.Y then
+            
+        end
         local Button = Instance.new("TextButton", Frame)
         Button.Text = text
         Button.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
