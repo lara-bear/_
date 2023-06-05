@@ -1,5 +1,6 @@
 return function(ToggleUIKey)
 	local UserInputService = game:GetService("UserInputService")
+	local GameLocksCursor = UserInputService.MouseBehavior == Enum.MouseBehavior.LockCenter
 	local TweenService = game:GetService("TweenService")
 	local Tween = function(...)
 		return TweenService:Create(...):Play()
@@ -7,7 +8,13 @@ return function(ToggleUIKey)
 	local Gui = Instance.new("ScreenGui", game.CoreGui)
 	Gui.ResetOnSpawn = false
 	Gui.ZIndexBehavior = "Global"
-	UserInputService.InputBegan:Connect(function(Input)
+	UserInputService.InputBegan:Connect(GameLocksCursor and function(Input)
+		if Input.KeyCode ~= ToggleUIKey then
+			return
+		end
+		Gui.Enabled = not Gui.Enabled
+		UserInputService.MouseBehavior = Gui.Enabled and Enum.MouseBehavior.Default or Enum.MouseBehavior.LockCenter
+	end or function(Input)
 		if Input.KeyCode ~= ToggleUIKey then
 			return
 		end
