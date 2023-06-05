@@ -26,40 +26,34 @@ return function(ToggleUIKey)
 	TopBar.BackgroundTransparency = 0.4
 	TopBar.BorderColor3 = Color3.new(1,1,1)
 	TopBar.InputBegan:Connect(function(Input)
-
 		if Input.UserInputType ~= Enum.UserInputType.MouseButton1 then
 			return
 		end
-
 		local UIPositionOnInputStart = Frame.AbsolutePosition
-
 		local Changed
-
 		Changed = UserInputService.InputChanged:Connect(function(NewInput)
-
 			if NewInput.UserInputType ~= Enum.UserInputType.MouseMovement then
 				return
 			end
-
 			local Delta = NewInput.Position - Input.Position
-
 			Tween(Frame, TweenInfo.new(0.1), {Position = UDim2.new(0, UIPositionOnInputStart.X + Delta.X, 0, UIPositionOnInputStart.Y + Delta.Y)})
-
 		end)
-
 		local Changed_2
-
 		Changed_2 = Input.Changed:Connect(function()
-
 			if Input.UserInputState ~= Enum.UserInputState.End then
 				return
 			end
-
 			Changed:Disconnect()
-
 		end)
-
 	end)
+	local Watermark = Instance.new("TextLabel", TopBar)
+	Watermark.Size = UDim2.new(1,0,1,0)
+	Watermark.BackgroundTransparency = 1
+	Watermark.BorderSizePixel = 0
+	Watermark.Text = "Button UI Library // github.com/lara-bear"
+	Watermark.TextColor3 = Color3.new(1,1,1)
+	Watermark.TextSize = 20
+	Watermark.Font = "Code"
 	local function newButton(XIndex, YIndex, text, callback)
 		local Old = {X=Frame.Size.X.Offset, Y=Frame.Size.Y.Offset}
 		local XAdd = 5 + XIndex * 205
