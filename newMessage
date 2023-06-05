@@ -1,11 +1,15 @@
 local f, c, cc, dq = "/font", "font color", "#22ff00", '"'
 local z = "<"..c..'="'..cc..'">'
 local LocalPlayer = game.Players.LocalPlayer
-local SGUI = Instance.new("ScreenGui", gethui())
+local SGUI = Instance.new("ScreenGui", LocalPlayer.PlayerGui)
 SGUI.ResetOnSpawn = false
 SGUI.ZIndexBehavior = "Global"
 SGUI.Parent = LocalPlayer.PlayerGui
-local ListLayout = Instance.new("UIListLayout", SGUI)
+local Frame = Instance.new("Frame", SGUI)
+Frame.Size = UDim2.new(0,0,0,0)
+Frame.Position = UDim2.new(0,5,0,0)
+Frame.BackgroundTransparency = 1
+local ListLayout = Instance.new("UIListLayout", Frame)
 local TextElement = game:GetObjects("rbxassetid://13656313030")[1]
 TextElement.AutomaticSize = Enum.AutomaticSize.None
 TextElement.TextXAlignment = 0
@@ -13,7 +17,7 @@ TextElement.Position = UDim2.new(0,5,0,0)
 TextElement.Frame.Position = UDim2.new(0,-5,0,0)
 local function newMessage(text)
 	local A = TextElement:Clone()
-	A.Parent = SGUI
+	A.Parent = Frame
 	A.Text = text
 	local AbsX = 400
 	local AbsY = 30
