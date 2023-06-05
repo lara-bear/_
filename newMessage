@@ -7,12 +7,12 @@ SGUI.ZIndexBehavior = "Global"
 SGUI.Parent = LocalPlayer.PlayerGui
 local ListLayout = Instance.new("UIListLayout", SGUI)
 local TextElement = game:GetObjects("rbxassetid://13656313030")[1]
+TextElement.AutomaticSize = "None"
+TextElement.TextXAlignment = "Left"
 local function newMessage(text)
 	local A = TextElement:Clone()
 	A.Parent = SGUI
 	A.Text = text
-	A.AutomaticSize = "None"
-	A.TextXAlignment = "Left"
 	local AbsX = 400
 	local AbsY = 30
 	local ti, ti1 = TweenInfo.new(.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
