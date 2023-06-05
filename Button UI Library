@@ -1,8 +1,8 @@
 return function(ToggleUIKey)
 	local UserInputService = game:GetService("UserInputService")
 	local TweenService = game:GetService("TweenService")
-	local Tween = function(a,b,c)
-		return TweenService:Create(a,b,c):Play()
+	local Tween = function(...)
+		return TweenService:Create(...):Play()
 	end
 	local Gui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
 	Gui.ResetOnSpawn = false
