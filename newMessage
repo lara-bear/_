@@ -1,0 +1,35 @@
+local f, c, cc, dq = "/font", "font color", "#22ff00", '"'
+local z = "<"..c..'="'..cc..'">'
+local LocalPlayer = game.Players.LocalPlayer
+local SGUI = Instance.new("ScreenGui", gethui())
+SGUI.ResetOnSpawn = false
+SGUI.ZIndexBehavior = "Global"
+SGUI.Parent = LocalPlayer.PlayerGui
+local ListLayout = Instance.new("UIListLayout", SGUI)
+local TextElement = game:GetObjects("rbxassetid://13656313030")[1]
+local function newMessage(text)
+	local A = TextElement:Clone()
+	A.Parent = SGUI
+	A.Text = text
+	A.AutomaticSize = Enum.AutomaticSize.None
+	local AbsX = 400
+	local AbsY = 30
+	local ti, ti1 = TweenInfo.new(.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
+	local sz, sz1 = game['TweenService']:Create(A, ti1, {Size = UDim2.new(0,AbsX,0,AbsY)}), game['TweenService']:Create(A, ti1, {BackgroundTransparency = 2, Size = UDim2.new(0,0,0,1)})
+	local tt, tt1 = game['TweenService']:Create(A, ti, {TextTransparency = 0}), game['TweenService']:Create(A, ti, {TextTransparency = 1})
+	local f, f1 = game['TweenService']:Create(A.Frame, ti1, {Size = UDim2.new(0,5,1,0)}), game['TweenService']:Create(A.Frame, ti1, {Size = UDim2.new(0,5,1,0)})
+	coroutine.wrap(function()
+		f:Play()
+		sz:Play()
+		task.wait(.5)
+		tt:Play()
+		task.wait(5)
+		tt1:Play()
+		task.wait(.5)
+		f1:Play()
+		sz1:Play()
+		task.wait(1)
+		A:Destroy()
+	end)()
+end
+return newMessage, SGUI
