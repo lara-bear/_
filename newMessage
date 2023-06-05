@@ -9,6 +9,8 @@ local ListLayout = Instance.new("UIListLayout", SGUI)
 local TextElement = game:GetObjects("rbxassetid://13656313030")[1]
 TextElement.AutomaticSize = Enum.AutomaticSize.None
 TextElement.TextXAlignment = 0
+TextElement.Position = UDim2.new(0,5,0,0)
+TextElement.Frame.Position = UDim2.new(0,-5,0,0)
 local function newMessage(text)
 	local A = TextElement:Clone()
 	A.Parent = SGUI
