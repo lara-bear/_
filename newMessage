@@ -7,8 +7,8 @@ SGUI.ZIndexBehavior = "Global"
 SGUI.Parent = LocalPlayer.PlayerGui
 local ListLayout = Instance.new("UIListLayout", SGUI)
 local TextElement = game:GetObjects("rbxassetid://13656313030")[1]
-TextElement.AutomaticSize = "None"
-TextElement.TextXAlignment = "Left"
+TextElement.AutomaticSize = Enum.AutomaticSize.None
+TextElement.TextXAlignment = 0
 local function newMessage(text)
 	local A = TextElement:Clone()
 	A.Parent = SGUI
