@@ -4,7 +4,7 @@ return function(ToggleUIKey)
 	local Tween = function(...)
 		return TweenService:Create(...):Play()
 	end
-	local Gui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
+	local Gui = Instance.new("ScreenGui", game.CoreGui)
 	Gui.ResetOnSpawn = false
 	Gui.ZIndexBehavior = "Global"
 	UserInputService.InputBegan:Connect(function(Input)
