@@ -1,0 +1,40 @@
+return function(ToggleUIKey)
+    local flib = loadstring(game:HttpGet('https://pastebin.com/raw/LYKg9gJ8'))()
+    local Gui = Instance.new("ScreenGui", gethui())
+    Gui.ResetOnSpawn = false
+    Gui.ZIndexBehavior = "Global"
+    game:GetService("UserInputService").InputBegan:Connect(function(Input)
+        if Input.KeyCode ~= ToggleUIKey then
+            return
+        end
+        Gui.Enabled = not Gui.Enabled
+    end)
+    local Frame = Instance.new("Frame", Gui)
+    Frame.Size = UDim2.new(0, 620, 0, 125)
+    Frame.BackgroundColor3 = Color3.new(0,0,0)
+    Frame.BackgroundTransparency = 0.6
+    Frame.BorderColor3 = Color3.new(1,1,1)
+    flib.gui.draggui(Frame)
+    local function newButton(XIndex, YIndex, text, callback)
+        local XAdd = 5 + XIndex * 205
+        local YAdd = 5 + YIndex * 30
+        local Button = Instance.new("TextButton", Frame)
+        Button.Text = text
+        Button.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+        Button.BorderColor3 = Color3.new(1,1,1)
+        Button.Size = UDim2.new(0, 200, 0, 25)
+        Button.Position = UDim2.new(0, XAdd, 0, YAdd)
+        Button.Font = "Code"
+        Button.TextColor3 = Color3.new(1,1,1)
+        Button.TextSize = 20
+        local Toggle = false
+        Button.MouseButton1Click:Connect(function()
+            Toggle = not Toggle
+            Button.BackgroundColor3 = Toggle and Color3.new(0.2,0.4,0.2) or Color3.new(0.2,0.2,0.2)
+            Button.BorderColor3 = Toggle and Color3.new(0,1,0) or Color3.new(1,1,1)
+            return callback(Toggle)
+        end)
+        return Button
+    end
+    return newButton
+end
