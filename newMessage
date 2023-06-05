@@ -1,7 +1,7 @@
 local f, c, cc, dq = "/font", "font color", "#22ff00", '"'
 local z = "<"..c..'="'..cc..'">'
 local LocalPlayer = game.Players.LocalPlayer
-local SGUI = Instance.new("ScreenGui", LocalPlayer.PlayerGui)
+local SGUI = Instance.new("ScreenGui", game.CoreGui)
 SGUI.ResetOnSpawn = false
 SGUI.ZIndexBehavior = "Global"
 SGUI.Parent = LocalPlayer.PlayerGui
