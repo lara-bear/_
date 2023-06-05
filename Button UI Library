@@ -50,7 +50,7 @@ return function(ToggleUIKey)
 	Watermark.Size = UDim2.new(1,0,1,0)
 	Watermark.BackgroundTransparency = 1
 	Watermark.BorderSizePixel = 0
-	Watermark.Text = "Button UI Library // github.com/lara-bear"
+	Watermark.Text = "Button UI Library"
 	Watermark.TextColor3 = Color3.new(1,1,1)
 	Watermark.TextSize = 20
 	Watermark.Font = "Code"
