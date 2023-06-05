@@ -16,13 +16,31 @@ return function(ToggleUIKey)
 		Gui.Enabled = not Gui.Enabled
 	end)
 	if GameLocksCursor then
-		RunService.RenderStepped:Connect(function()
-			print(UserInputService.MouseBehavior)
+		local cursor = Instance.new("ImageLabel")
+		cursor.Parent = Gui
+		cursor.ZIndex = 1024
+		cursor.Name = "cursor"
+		cursor.BackgroundTransparency = 1
+		cursor.Size = UDim2.new(0,17,0,17)
+		cursor.Image = "rbxassetid://518398610"
+		cursor.ImageColor3 = Color3.fromRGB(255,255,255)
+		local Mouse = game.Players.LocalPlayer:GetMouse()
+		local MouseLockBypass_A = RunService.RenderStepped:Connect(function()
+			cursor.Visible = Gui.Enabled
+			cursor.Position = UDim2.new(0,Mouse.X,0,Mouse.Y)
 			UserInputService.MouseBehavior = Gui.Enabled and Enum.MouseBehavior.Default or Enum.MouseBehavior.LockCenter
 		end)
-		UserInputService:GetPropertyChangedSignal("MouseBehavior"):Connect(function()
-			warn(UserInputService.MouseBehavior)
+		local MouseLockBypass_B = UserInputService:GetPropertyChangedSignal("MouseBehavior"):Connect(function()
+			cursor.Visible = Gui.Enabled
+			cursor.Position = UDim2.new(0,Mouse.X,0,Mouse.Y)
 			UserInputService.MouseBehavior = Gui.Enabled and Enum.MouseBehavior.Default or Enum.MouseBehavior.LockCenter
+		end)
+		task.spawn(function()
+			while Gui do
+				wait(0.5)
+			end
+			MouseLockBypass_A:Disconnect()
+			MouseLockBypass_B:Disconnect()
 		end)
 	end
 	local Max = {X=0,Y=0}
