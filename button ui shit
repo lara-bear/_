@@ -1,4 +1,4 @@
-return function(ToggleUIKey)
+return function(ToggleUIKey, FrameXMult, FrameYMult)
     local flib = loadstring(game:HttpGet('https://pastebin.com/raw/LYKg9gJ8'))()
     local Gui = Instance.new("ScreenGui", gethui())
     Gui.ResetOnSpawn = false
@@ -9,9 +9,8 @@ return function(ToggleUIKey)
         end
         Gui.Enabled = not Gui.Enabled
     end)
-    local Max = {X=0,Y=0}
     local Frame = Instance.new("Frame", Gui)
-    Frame.Size = UDim2.new(0, 620, 0, 125)
+    Frame.Size = UDim2.new(0, 200*FrameXMult+10, 0, 25*FrameYMult+10)
     Frame.BackgroundColor3 = Color3.new(0,0,0)
     Frame.BackgroundTransparency = 0.6
     Frame.BorderColor3 = Color3.new(1,1,1)
@@ -19,15 +18,6 @@ return function(ToggleUIKey)
     local function newButton(XIndex, YIndex, text, callback)
         local XAdd = 5 + XIndex * 205
         local YAdd = 5 + YIndex * 30
-        local Old = {X=Frame.Size.X.Offset, Y=Frame.Size.Y.Offset}
-        if XAdd > Max.X then
-            Max.X = XAdd
-            Frame.Size = UDim2.new(0, XAdd + 205, 0, Old.Y)
-        end
-        if YAdd > Max.Y then
-            Max.Y = YAdd
-            Frame.Size = UDim2.new(0, Old.X, 0, YAdd + 30)
-        end
         local Button = Instance.new("TextButton", Frame)
         Button.Text = text
         Button.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
