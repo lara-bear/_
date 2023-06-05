@@ -26,19 +26,21 @@ return function(ToggleUIKey)
 	local MouseLockBypass_A = RunService.RenderStepped:Connect(function()
 		cursor.Visible = Gui.Enabled
 		cursor.Position = UDim2.new(0,Mouse.X-3,0,Mouse.Y+1)
-		UserInputService.MouseBehavior = Gui.Enabled and Enum.MouseBehavior.Default or Enum.MouseBehavior.LockCenter
+		UserInputService.MouseBehavior = Gui.Enabled and Enum.MouseBehavior.Default or UserInputService.MouseBehavior
 	end)
 	local MouseLockBypass_B = UserInputService:GetPropertyChangedSignal("MouseBehavior"):Connect(function()
 		cursor.Visible = Gui.Enabled
 		cursor.Position = UDim2.new(0,Mouse.X-3,0,Mouse.Y+1)
-		UserInputService.MouseBehavior = Gui.Enabled and Enum.MouseBehavior.Default or Enum.MouseBehavior.LockCenter
+		UserInputService.MouseBehavior = Gui.Enabled and Enum.MouseBehavior.Default or UserInputService.MouseBehavior
 	end)
+	warn(cursor)
 	task.spawn(function()
 		while Gui do
 			wait(0.5)
 		end
 		MouseLockBypass_A:Disconnect()
 		MouseLockBypass_B:Disconnect()
+		warn("Disabled")
 	end)
 	local Max = {X=0,Y=0}
 	local Frame = Instance.new("Frame", Gui)
